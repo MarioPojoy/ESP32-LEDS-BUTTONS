@@ -8,11 +8,13 @@ const char* PARAM_INPUT = "state";
 
 const int output = GPIO_NUM_18;
 const int output2 = GPIO_NUM_19;
-const int output3 = GPIO_NUM_2;
+const int output3 = GPIO_NUM_23;
 
 const int buttonPin = GPIO_NUM_17;
 const int buttonPin2 = GPIO_NUM_16;
 const int buttonPin3 = GPIO_NUM_27;
+
+const int readyLed = GPIO_NUM_2;
 
 // Variables will change:
 int ledState = HIGH;          // the current state of the output pin
@@ -199,9 +201,11 @@ void setup(){
   pinMode(output, OUTPUT);
   pinMode(output2, OUTPUT);
   pinMode(output3, OUTPUT);
+  pinMode(readyLed, OUTPUT);
   digitalWrite(output, HIGH);
   digitalWrite(output2, HIGH);
   digitalWrite(output3, HIGH);
+  digitalWrite(readyLed, LOW);
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(buttonPin2, INPUT_PULLUP);
   pinMode(buttonPin3, INPUT_PULLUP);
@@ -213,6 +217,8 @@ void setup(){
     Serial.println("Connecting to WiFi..");
   }
 
+  digitalWrite(readyLed, HIGH);
+  
   // Print ESP Local IP Address
   Serial.println(WiFi.localIP());
 
