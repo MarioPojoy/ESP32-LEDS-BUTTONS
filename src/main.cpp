@@ -10,9 +10,9 @@ const int output = GPIO_NUM_18;
 const int output2 = GPIO_NUM_19;
 const int output3 = GPIO_NUM_23;
 
-const int buttonPin = GPIO_NUM_17;
+const int buttonPin = GPIO_NUM_27;
 const int buttonPin2 = GPIO_NUM_16;
-const int buttonPin3 = GPIO_NUM_27;
+const int buttonPin3 = GPIO_NUM_17;
 
 const int readyLed = GPIO_NUM_2;
 
@@ -206,9 +206,9 @@ void setup(){
   digitalWrite(output2, HIGH);
   digitalWrite(output3, HIGH);
   digitalWrite(readyLed, LOW);
-  pinMode(buttonPin, INPUT_PULLUP);
-  pinMode(buttonPin2, INPUT_PULLUP);
-  pinMode(buttonPin3, INPUT_PULLUP);
+  pinMode(buttonPin, INPUT_PULLDOWN);
+  pinMode(buttonPin2, INPUT_PULLDOWN);
+  pinMode(buttonPin3, INPUT_PULLDOWN);
   
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
@@ -324,7 +324,7 @@ void loop() {
       buttonState = reading;
 
       // only toggle the LED if the new button state is HIGH
-      if (buttonState == LOW) {
+      if (buttonState == HIGH) {
         ledState = !ledState;
       }
     }
@@ -344,7 +344,7 @@ void loop() {
       buttonState2 = reading2;
 
       // only toggle the LED if the new button state is HIGH
-      if (buttonState2 == LOW) {
+      if (buttonState2 == HIGH) {
         ledState2 = !ledState2;
       }
     }
@@ -364,7 +364,7 @@ void loop() {
       buttonState3 = reading3;
 
       // only toggle the LED if the new button state is HIGH
-      if (buttonState3 == LOW) {
+      if (buttonState3 == HIGH) {
         ledState3 = !ledState3;
       }
     }
