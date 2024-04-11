@@ -2,9 +2,13 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ESPmDNS.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 #include "credentials.h"
 
 const char* PARAM_INPUT = "state";
+const char* hostname = "esp32-relay";
 
 const int output = GPIO_NUM_18;
 const int output2 = GPIO_NUM_19;
@@ -98,7 +102,7 @@ setInterval(function ( ) {
   };
   xhttp.open("GET", "/state", true);
   xhttp.send();
-}, 500 ) ;
+}, 1000 ) ;
 
 setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
@@ -120,7 +124,7 @@ setInterval(function ( ) {
   };
   xhttp.open("GET", "/state2", true);
   xhttp.send();
-}, 500 ) ;
+}, 1000 ) ;
 
 setInterval(function ( ) {
   var xhttp = new XMLHttpRequest();
@@ -142,7 +146,7 @@ setInterval(function ( ) {
   };
   xhttp.open("GET", "/state3", true);
   xhttp.send();
-}, 500 ) ;
+}, 1000 ) ;
 </script>
 </body>
 </html>
@@ -217,6 +221,41 @@ void setup(){
     Serial.println("Connecting to WiFi..");
   }
 
+  if (!MDNS.begin(hostname)) {
+    Serial.println("Error setting up MDNS responder!");
+    while (1) {
+      delay(1000);
+    }
+  }
+
+  ArduinoOTA.setHostname(hostname);
+
+  ArduinoOTA
+    .onStart([]() {
+      String type;
+      if (ArduinoOTA.getCommand() == U_FLASH) {
+        type = "sketch";
+      } else {
+        type = "filesystem";
+      }
+      Serial.println("Start updating " + type);
+    });
+    ArduinoOTA.onEnd([]() {
+      Serial.println("\nEnd");
+    });
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+      Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+    });
+    ArduinoOTA.onError([](ota_error_t error) {
+      Serial.printf("Error[%u]: ", error);
+      if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+      else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+      else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+      else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+      else if (error == OTA_END_ERROR) Serial.println("End Failed");
+    });
+  
+  ArduinoOTA.begin();
   digitalWrite(readyLed, HIGH);
   
   // Print ESP Local IP Address
@@ -300,6 +339,7 @@ void setup(){
 }
   
 void loop() {
+  ArduinoOTA.handle();
   // read the state of the switch into a local variable:
   int reading = digitalRead(buttonPin);
   int reading2 = digitalRead(buttonPin2);
